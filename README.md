@@ -1,7 +1,7 @@
 # DeriDrone [ A drone simulation game that shootsprojectile ]
 
 ## Download and Installation
-**[On GitHub](https://github.com/lsmucassi/deridrone/)
+[On GitHub](https://github.com/lsmucassi/deridrone/)
 ## Preview
 **[View Live Preview](deridrone.unaux.com/)**
 
