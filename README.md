@@ -3,7 +3,7 @@
 ## Download and Installation
 [On GitHub](https://github.com/lsmucassi/deridrone/)
 ## Preview
-**[View Live Preview](deridrone.unaux.com/)**
+**[View Live Preview](http://www.deridrone.unaux.com/)**
 
 ## Usage
 
