@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+    <!-- ==================================================
+        Linda Mucassi 
+        Technical Assessment
+        Drone Simulation
+        Derivco 
+    -->
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>DeriDrone_</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./style/main.css">
+  <link rel="shortcut icon" href="./assets/98172-200.png">
+  <!-- <link rel="shortcut icon" href="http://example.com/favicon.ico" /> -->
+
+</head>
+
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <div class="container">
+        <!-- <img class="navbar-brand" src="./assets/derlogo.png" alt=""> -->
+      <a class="navbar-brand" href="#">&#9859; DeriDrone_</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Exit</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Page Content -->
+  <section>
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 text-center">
+        <div class="col-lg-6 mb-3">  
+            <div class="bt-light">
+              <h3>DeriDrone_ Simulation</h3>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-3">
+            <canvas id="gameBoard">
+                
+            </canvas>
+        </div>
+        <div class="col-lg-6 mb-3">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" 
+                    data-whatever="@place" id="place">Place &#9820;</button>
+        <!-- </div>
+        <div class="col-lg-6 mb-3"> -->
+            <!-- <button type="button" class="btn btn-primary" id="move">Move &#9991;</button> -->
+        <!-- </div>
+        <div class="col-md-4 mb-3"> -->
+            <!-- <button type="button" class="btn btn-primary" id="attack">Attack &#9760;</button> -->
+        <!-- </div>
+        <div class="col-md-4 mb-3"> -->
+            <!-- <button type="button" class="btn btn-primary" id="left">&#9754; Turn Left</button> -->
+        <!-- </div>
+        <div class="col-md-4 mb-3"> -->
+            <!-- <button type="button" class="btn btn-primary" id="right">Turn Right &#9755;</button> -->
+        </div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Place The Drone</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="form">
+                    <div class="form-row">
+                        <div class="col-md-4 mb-3">
+                        <label for="validationServer01">X: Position</label>
+                        <input type="text" class="form-control " id="validationServer01" placeholder="First name" 
+                                value="142" name="posX" required>
+                        <!-- <div class="valid-feedback">
+                            Looks good!
+                        </div> -->
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        <label for="validationServer02">Y: Position</label>
+                        <input type="text" class="form-control" id="validationServer02" placeholder="Last name" 
+                                value="142" name="posY" required>
+                        <!-- <div class="valid-feedback">
+                            Looks good!
+                        </div> -->
+                        </div>
+                        <div class="col-md-4 mb-3">
+                        <!-- <div class="col-auto my-1"> -->
+                            <label for="validationServer02">F: Direction</label>
+                            <label class="mr-sm-2 sr-only" for="inlineFormCustomSelect">Preference</label>
+                            <select name="direction" class="custom-select mr-sm-2" id="inlineFormCustomSelect" required>
+                                
+                                <option value="90">North</option>
+                                <option value="180">West</option>
+                                <option value="270">South</option>
+                                <option value="0">East</option>
+                            </select>
+                            <!-- </div> -->
+                        </div>
+                    </div>
+                    <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button> -->
+                    <button class="btn btn-primary" type="submit">Place Drone</button>
+                    </form>
+            </div>
+            </div>
+        </div>
+        </div>
+        </div>
+        </div>
+    </div>
+</section>
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.slim.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+        var droneX, droneY, droneF;
+        
+        //get input values to place drone
+        const modal = document.querySelector('.modal-body'),
+              form = document.querySelectorAll('.form'),
+              submit  = form[0].querySelector('button[type="submit"]');
+
+        function getFormData(e) {
+          // e.preventDefault();
+          var formData = new FormData(form[0]);
+
+          droneX = formData.get('posX');
+          droneY = formData.get('posY');
+          droneF = formData.get('direction');
+          // alert(droneF + ' ' + droneX + ' ' + droneY);
+        }
+
+        document.addEventListener('DOMContentLoaded', function(){
+          submit.addEventListener('click', getFormData, false)
+        }, false)
+        
+        const FPS = 30;         // frames per second
+        const DRONE_SIZE = 20;  // size of drone
+        const ROT_SPEED = 90;  // turn speed
+        const DRONE_ACC = 5     // drone acceleration in px per sec
+        const FRICT = 0.7       // friction to slow done the drone on release
+        const LASER_MAX = 100   // Maximum number of projectile in a screen at a time
+        const LASER_SPEED = 500 // Speed of projectile laser
+        const LASER_DST = 0.1   // distance a laser can travel
+        const EXPLODE_DUR = 0.3       // duration of explosion
+
+        
+        /** @type {HTMLCanvasElement} */
+        var canv = document.getElementById("gameBoard");
+        var ctx = canv.getContext("2d");
+
+        //drone
+        var drone = new newDrone(); 
+        // {
+        //     x: canv.width / 2,      // x position
+        //     y: canv.height / 2,     // y position
+        //     r: DRONE_SIZE / 2,      // drone radius
+        //     f: 90 / 180 * Math.PI,   // set direction and convert to radians [0 - 90 - 180 - 270]
+        //     rot: 0,
+        //     move: false,
+        //     motion: {
+        //         x: 0,
+        //         y: 0
+        //     }
+        // }
+
+        //create game loop
+        setInterval(gameLoop, 1000 / FPS);
+        //set key inputs
+        document.addEventListener("keydown", keyDown);
+        document.addEventListener("keyup", keyUp);
+
+        function keyDown(/** @type {KeyboardEvent} */ ev) {
+            switch(ev.keyCode) {
+                case 32:        // space bar  key - for attack
+                    shootLaser();
+                    break;
+                case 37:        // left arrow key - rotates drone left
+                    drone.rot = ROT_SPEED / 180 * Math.PI / FPS;
+                    break;
+                case 38:        // up arrow key - move drone
+                    drone.move = true;
+                    break;
+                case 39:        // right arrow key - rotates drone right
+                    drone.rot = -ROT_SPEED / 180 * Math.PI / FPS;
+                    break;
+            }
+        }
+
+        //explode projectiles
+        function explodeLaser() {
+            drone.explodeTime = Math.ceil(EXPLODE_DUR * FPS);
+            // ctx.fillStyle = "lime"
+            // ctx.strokeStyle = "lime";
+            // ctx.beginPath();
+            // ctx.arc(drone.x, drone.y, drone.r, 0, Math.PI * 2, false);
+            // ctx.fill();
+            // ctx.stroke();
+        }
+
+        function keyUp(/** @type {KeyboardEvent} */ ev) {
+            switch(ev.keyCode) {
+                case 32:        // space bar  key - for attack
+                    drone.canShoot = true;
+                    break;
+                case 37:        // left arrow key - STOP rotates drone left
+                    drone.rot = 0;
+                    break;
+                case 38:        // up arrow key - STOP move drone
+                    drone.move = false;
+                    break;
+                case 39:        // right arrow key - STOP rotates drone right
+                    drone.rot = 0;
+                    break;
+            }
+        }
+
+        function newDrone () {
+            return {
+                // x: parseInt(droneX),      // x position
+                // y: parseInt(droneY),     // y position
+                x: canv.width / 2,
+                y: canv.height / 2,
+                r: DRONE_SIZE / 2,      // drone radius
+                // f: parseInt(droneF) / 180 * Math.PI,   // set direction and convert to radians [0 - 90 - 180 - 270]
+                f: 90 / 180 * Math.PI,
+                rot: 0,
+                canShoot: true,
+                laser: [],
+                explodeTime: 0,
+                move: false,
+                motion: {
+                    x: 0,
+                    y: 0
+                }
+            }
+        }
+
+        //shoot laser
+        function shootLaser() {
+            // make laser
+            if (drone.canShoot && drone.laser.length < LASER_MAX) {
+                drone.laser.push({      //shooting from drone head
+                    x: drone.x + 4 / 3 * drone.r * Math.cos(drone.f),
+                    y: drone.y - 4 / 3 * drone.r * Math.sin(drone.f),
+                    xvel: LASER_SPEED * Math.cos(drone.f) / FPS,
+                    yvel: - LASER_SPEED * Math.sin(drone.f) / FPS,
+                    dist: 0
+                })
+            }
+            //stop shooting
+            drone.canShoot = false;
+        }
+
+        //game Loop
+        function gameLoop(){
+            //Draw board
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, canv.width, canv.height);
+            
+            //drone motion
+            if (drone.move) {
+                drone.motion.x += DRONE_ACC * Math.cos(drone.f) / FPS;
+                drone.motion.y -= DRONE_ACC * Math.sin(drone.f) / FPS;
+
+                //Draw motion effect  [Triangular shape]
+                ctx.fillStyle = "white";
+                ctx.strokeStyle = "blue";
+                ctx.lineWidth = DRONE_SIZE / 20;
+                ctx.beginPath();
+                //head of drone
+                ctx.moveTo(
+                    drone.x - drone.r * (2 / 3 * Math.cos(drone.f) + 0.5 * Math.sin(drone.f)),
+                    drone.y + drone.r * (2 / 3 * Math.sin(drone.f) - 0.5 * Math.cos(drone.f))
+                );
+                //rear left of drone
+                ctx.lineTo(
+                    drone.x - drone.r * 6 / 3 * Math.cos(drone.f),
+                    drone.y + drone.r * 6 / 3 * Math.sin(drone.f)
+                );
+                //rear right of drone
+                ctx.lineTo(
+                    drone.x - drone.r * (2 / 3 * Math.cos(drone.f) - 0.5 * Math.sin(drone.f)),
+                    drone.y + drone.r * (2 / 3 * Math.sin(drone.f) + 0.5 * Math.cos(drone.f))
+                );
+                ctx.closePath();    //completes path
+                ctx.fill()
+                ctx.stroke();       //draws the path
+            } else {
+                drone.motion.x -= FRICT * drone.motion.x;
+                drone.motion.y -= FRICT * drone.motion.y;
+            }
+            //Draw drone  [Triangular shape]
+            ctx.strokeStyle = "white";
+            ctx.lineWidth = DRONE_SIZE / 20;
+            ctx.beginPath();
+            //head of drone
+            ctx.moveTo(
+                drone.x + 4 / 3 * drone.r * Math.cos(drone.f),
+                drone.y - 4 / 3 * drone.r * Math.sin(drone.f)
+            );
+            //rear left of drone
+            ctx.lineTo(
+                drone.x - drone.r * (2 / 3 * Math.cos(drone.f) + Math.sin(drone.f)),
+                drone.y + drone.r * (2 / 3 * Math.sin(drone.f) - Math.cos(drone.f))
+            );
+            //rear right of drone
+            ctx.lineTo(
+                drone.x - drone.r * (2 / 3 * Math.cos(drone.f) - Math.sin(drone.f)),
+                drone.y + drone.r * (2 / 3 * Math.sin(drone.f) + Math.cos(drone.f))
+            );
+            ctx.closePath();    //completes path
+            ctx.stroke();       //draws the path
+
+            //rotate drone
+            drone.f += drone.rot;
+
+            drone.x += drone.motion.x;
+            drone.y += drone.motion.y;
+
+            //border validation
+            // if (drone.x < 0 - drone.r) {
+            //     drone.x = canv.width + drone.r;
+            // } else if (drone.x > canv.width + drone.r) {
+            //     drone.x = 0 - drone.r;
+            // }
+            // if (drone.y < 0 - drone.r) {
+            //     drone.y = canv.height + drone.r;
+            // } else if (drone.y > canv.height + drone.r) {
+            //     drone.y = 0 - drone.r;
+            // }
+
+                // X Border
+            if (drone.x - DRONE_SIZE /2 < 0) {
+                drone.motion.x = 0;
+                // drone.move = false;
+            } else {
+                 //move drone
+                drone.x += drone.motion.x;
+                
+            }
+            if (drone.x + DRONE_SIZE / 2 > canv.width) {
+                drone.motion.x = 0;
+                // drone.move = false;
+            }  else {
+                 //move drone
+                drone.x += drone.motion.x;
+                
+            }
+            //Y Borders
+            if (drone.y - DRONE_SIZE /2 < 0) {
+                drone.motion.y = 0;
+                // drone.move = false;
+            }  else {
+                 //move drone
+             
+                drone.y += drone.motion.y;
+            }
+            if (drone.y + DRONE_SIZE / 2 > canv.height ) {
+                drone.motion.y = 0;
+                // drone.move = false;
+            }  else {
+                 //move drone
+                drone.y += drone.motion.y;
+            }
+
+
+            for (var i = drone.laser.length - 1; i >= 0; i--) {
+                if (drone.laser[i].dist > LASER_DST * canv.width) {
+                    explodeLaser();
+                    ctx.fillStyle = "darkred"
+                    ctx.beginPath();
+                    ctx.arc(drone.laser[i].x, drone.laser[i].y, drone.r * 1.2, 0, Math.PI * 2, false);
+                    ctx.fill();
+                    ctx.fillStyle = "red"
+                    ctx.beginPath();
+                    ctx.arc(drone.laser[i].x, drone.laser[i].y, drone.r * 1.1, 0, Math.PI * 2, false);
+                    ctx.fill();
+                    ctx.fillStyle = "orange"
+                    ctx.beginPath();
+                    ctx.arc(drone.laser[i].x, drone.laser[i].y, drone.r * 0.7, 0, Math.PI * 2, false);
+                    ctx.fill();
+                    ctx.fillStyle = "yellow"
+                    ctx.beginPath();
+                    ctx.arc(drone.laser[i].x, drone.laser[i].y, drone.r * 0.4, 0, Math.PI * 2, false);
+                    ctx.fill();
+                    ctx.fillStyle = "white"
+                    ctx.beginPath();
+                    ctx.arc(drone.laser[i].x, drone.laser[i].y, drone.r * 0.2 , 0, Math.PI * 2, false);
+                    ctx.fill();
+                    drone.explodeTime--;
+                    
+                    drone.laser.splice(i, 1);
+                    continue;
+                }
+
+                drone.laser[i].x += drone.laser[i].xvel;
+                drone.laser[i].y += drone.laser[i].yvel;
+
+                drone.laser[i].dist += Math.sqrt(Math.pow(drone.laser[i].xvel, 2) + Math.pow(drone.laser[i].yvel, 2));
+            }
+            //shoot lasers
+            for (var i = 0; i < drone.laser.length; i++) {
+                ctx.fillStyle = "salmon";
+                ctx.beginPath();
+                ctx.arc(drone.laser[i].x, drone.laser[i].y, DRONE_SIZE / 15, 0, Math.PI * 2, false);
+                ctx.fill();
+            }
+            //center of drone
+            ctx.fillStyle = "red";
+            ctx.fillRect(drone.x - 1, drone.y - 1, 2, 2);
+            
+        }
+
+  </script>
+</body>
+
+</html>
