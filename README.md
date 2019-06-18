@@ -3,7 +3,7 @@
 ## Download and Installation
 [On GitHub](https://github.com/lsmucassi/deridrone/)
 ## Preview
-**[View Live Preview](http://http://cruizelabs.co.za/)**
+**[View Live Preview](http://cruizelabs.co.za/)**
 
 ## Usage
 
