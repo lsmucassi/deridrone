@@ -9,6 +9,7 @@
 
 To begin using : Navigate to the root of the source folder of the code
 * Run via npm: `npm i `
+* Then run `npm run start ` - it will run automatically on your default browser
 * Or open the index.html file via your browser
 
 
